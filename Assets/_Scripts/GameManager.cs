@@ -1,81 +1,80 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-    public GameObject m_water;
-    private float posYUp = 3;
-    private float posYDown = 17;
-    private float posY = 3;
-    public GameObject m_rain;
+    [SerializeField] private GameObject WaterObject;
+    [SerializeField] private GameObject RainObject;
+    [SerializeField] private GameObject SunObject;
+    [SerializeField] private float GazeTime;
 
-    public float gazeTime = 1;
-    private float timer;
-    private bool gazeAtCheia;
-    private bool gazeAtSeca;
+    private float mTimer;
+    private bool mGazeAtRainButton;
+    private bool mGazeAtDryButton;
+    private bool mGazeAtDayNightButton;
 
-    // Use this for initialization
-    void Start () {
-		
-	}
+    void Update() {
+        if (mGazeAtRainButton)
+            StartRain();
 
-    void Update()
-    {
-        if (gazeAtCheia)
-        {
-            timer += Time.deltaTime;
-            if (timer >= gazeTime)
-            {
-                if (posY <= 17)
-                {
-                    m_rain.SetActive(true);
-                    posY += 0.05f;
-                    m_water.transform.position = new Vector3(249, posY, 249);
-                }
-                if (posY >= 17)
-                {
-                    gazeAtCheia = false;
-                    m_rain.SetActive(false);
-                    timer = 0;
-                }
+        if (mGazeAtDryButton)
+            StartDry();
+
+        if (mGazeAtDayNightButton)
+            DayNight();
+    }
+
+    private void StartRain() {
+        mTimer += Time.deltaTime;
+        if (mTimer >= GazeTime) {
+            if (WaterObject.transform.position.y <= 17) {
+                RainObject.SetActive(true);
+                WaterObject.transform.position = new Vector3(249, WaterObject.transform.position.y + .05f, 249);
+            }
+            if (WaterObject.transform.position.y >= 17) {
+                mGazeAtRainButton = false;
+                RainObject.SetActive(false);
+                mTimer = 0;
             }
         }
+    }
 
-        if (gazeAtSeca)
-        {
-            timer += Time.deltaTime;
-            if (timer >= gazeTime)
-            {
-                if (posY >= 3)
-                {
-                    posY -= 0.05f;
-                    m_water.transform.position = new Vector3(249, posY, 249);
-                }
-                if (posY <= 3) {
-                    gazeAtSeca = false;
-                    timer = 0;
-                }
+    private void StartDry() {
+        mTimer += Time.deltaTime;
+        if (mTimer >= GazeTime) {
+            if (WaterObject.transform.position.y >= 3)
+                WaterObject.transform.position = new Vector3(249, WaterObject.transform.position.y - .05f, 249);
+
+            if (WaterObject.transform.position.y <= 3) {
+                mGazeAtDryButton = false;
+                mTimer = 0;
             }
         }
-        
     }
 
-    public void PointerEnterCheia()
-    {
-        gazeAtCheia = true;
-        gazeAtSeca = false;
+    private void DayNight() {
+        mTimer += Time.deltaTime;
+        if (mTimer >= GazeTime) {
+            SunObject.transform.RotateAround(Vector3.zero, Vector3.right, 15f * Time.deltaTime);
+            SunObject.transform.LookAt(Vector3.zero);
+        }
     }
 
-    public void PointerEnterSeca()
-    {        
-        gazeAtSeca = true;
-        m_rain.SetActive(false);
-        gazeAtCheia = false;
+    public void PointerEnterRain() {
+        mGazeAtRainButton = true;
+        mGazeAtDryButton = false;
     }
 
-    public void PointerExit()
-    {
-        
+    public void PointerEnterDry() {
+        mGazeAtDryButton = true;
+        mGazeAtRainButton = false;
+        RainObject.SetActive(false);
+    }
+
+    public void PointerEnterDayNight() {
+        mGazeAtDayNightButton = true;
+    }
+
+    public void PointerExit() {
+
     }
 }
