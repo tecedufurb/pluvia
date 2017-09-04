@@ -27,18 +27,22 @@ public class GvrAudioSourceEditor : Editor {
   private SerializedProperty pitch = null;
   private SerializedProperty playOnAwake = null;
   private SerializedProperty priority = null;
+  private SerializedProperty spatialBlend = null;
   private SerializedProperty volume = null;
+  private SerializedProperty dopplerLevel = null;
+  private SerializedProperty spread = null;
   private SerializedProperty rolloffMode = null;
   private SerializedProperty maxDistance = null;
   private SerializedProperty minDistance = null;
   private SerializedProperty bypassRoomEffects = null;
   private SerializedProperty directivityAlpha = null;
   private SerializedProperty directivitySharpness = null;
+  private SerializedProperty listenerDirectivityAlpha = null;
+  private SerializedProperty listenerDirectivitySharpness = null;
   private Texture2D directivityTexture = null;
   private SerializedProperty gainDb = null;
   private SerializedProperty hrtfEnabled = null;
   private SerializedProperty occlusionEnabled = null;
-  private SerializedProperty spread = null;
 
   private GUIContent clipLabel = new GUIContent("AudioClip",
       "The AudioClip asset played by the GvrAudioSource.");
@@ -51,8 +55,17 @@ public class GvrAudioSourceEditor : Editor {
   private GUIContent priorityLabel = new GUIContent("Priority",
       "Sets the priority of the source. Note that a sound with a larger priority value will more " +
       "likely be stolen by sounds with smaller priority values.");
+  private GUIContent spatialBlendLabel = new GUIContent("Spatial Blend",
+      "Sets how much this source is treated as a 3D source. Setting this value to 0 will ignore " +
+      "distance attenuation and doppler effects. However, it does not affect panning the sound " +
+      "around the listener.");
   private GUIContent volumeLabel = new GUIContent("Volume",
       "Sets the overall volume of the sound.");
+  private GUIContent dopplerLevelLabel = new GUIContent("Doppler Level",
+      "Specifies how much the pitch is changed based on the relative velocity between the source " +
+      "and the listener.");
+  private GUIContent spreadLabel = new GUIContent("Spread",
+      "Source spread in degrees.");
   private GUIContent rolloffModeLabel = new GUIContent("Volume Rolloff",
       "Which type of rolloff curve to use.");
   private GUIContent maxDistanceLabel = new GUIContent("Max Distance",
@@ -74,6 +87,16 @@ public class GvrAudioSourceEditor : Editor {
   private GUIContent directivitySharpnessLabel = new GUIContent("Sharpness",
       "Sets the sharpness of the directivity pattern. Higher values will result in increased " +
       "directivity.");
+  private GUIContent listenerDirectivityLabel = new GUIContent("Listener Directivity",
+      "Controls the pattern of sound sensitivity of the listener for the source. This can " +
+      "change the perceived loudness of the source depending on which way the listener is facing " +
+      "relative to the source. Patterns are aligned to the 'forward' direction of the listener.");
+  private GUIContent listenerDirectivityAlphaLabel = new GUIContent("Alpha",
+      "Controls the balance between dipole pattern and omnidirectional pattern for listener " +
+      "sensitivity. By varying this value, differing directivity patterns can be formed.");
+  private GUIContent listenerDirectivitySharpnessLabel = new GUIContent("Sharpness",
+      "Sets the sharpness of the listener directivity pattern. Higher values will result in " +
+      "increased directivity.");
   private GUIContent gainLabel = new GUIContent("Gain (dB)",
       "Applies a gain to the source for adjustment of relative loudness.");
   private GUIContent hrtfEnabledLabel = new GUIContent("Enable HRTF",
@@ -82,8 +105,6 @@ public class GvrAudioSourceEditor : Editor {
   private GUIContent occlusionLabel = new GUIContent("Enable Occlusion",
       "Sets whether the sound of the source should be occluded when there are other objects " +
       "between the source and the listener.");
-  private GUIContent spreadLabel = new GUIContent("Spread",
-      "Source spread in degrees.");
 
   void OnEnable () {
     clip = serializedObject.FindProperty("sourceClip");
@@ -92,18 +113,22 @@ public class GvrAudioSourceEditor : Editor {
     pitch = serializedObject.FindProperty("sourcePitch");
     playOnAwake = serializedObject.FindProperty("playOnAwake");
     priority = serializedObject.FindProperty("sourcePriority");
+    spatialBlend = serializedObject.FindProperty("sourceSpatialBlend");
     volume = serializedObject.FindProperty("sourceVolume");
-    rolloffMode = serializedObject.FindProperty("rolloffMode");
+    dopplerLevel = serializedObject.FindProperty("sourceDopplerLevel");
+    spread = serializedObject.FindProperty("sourceSpread");
+    rolloffMode = serializedObject.FindProperty("sourceRolloffMode");
     maxDistance = serializedObject.FindProperty("sourceMaxDistance");
     minDistance = serializedObject.FindProperty("sourceMinDistance");
     bypassRoomEffects = serializedObject.FindProperty("bypassRoomEffects");
     directivityAlpha = serializedObject.FindProperty("directivityAlpha");
     directivitySharpness = serializedObject.FindProperty("directivitySharpness");
+    listenerDirectivityAlpha = serializedObject.FindProperty("listenerDirectivityAlpha");
+    listenerDirectivitySharpness = serializedObject.FindProperty("listenerDirectivitySharpness");
     directivityTexture = Texture2D.blackTexture;
     gainDb = serializedObject.FindProperty("gainDb");
     hrtfEnabled = serializedObject.FindProperty("hrtfEnabled");
     occlusionEnabled = serializedObject.FindProperty("occlusionEnabled");
-    spread = serializedObject.FindProperty("spread");
   }
 
   /// @cond
@@ -139,10 +164,15 @@ public class GvrAudioSourceEditor : Editor {
 
     EditorGUILayout.Separator();
 
+    EditorGUILayout.PropertyField(spatialBlend, spatialBlendLabel);
+
+    EditorGUILayout.Separator();
+
     EditorGUILayout.Slider(gainDb, GvrAudio.minGainDb, GvrAudio.maxGainDb, gainLabel);
 
     EditorGUILayout.Separator();
 
+    EditorGUILayout.PropertyField(dopplerLevel, dopplerLevelLabel);
     EditorGUILayout.PropertyField(spread, spreadLabel);
     EditorGUILayout.PropertyField(rolloffMode, rolloffModeLabel);
     ++EditorGUI.indentLevel;
@@ -156,6 +186,25 @@ public class GvrAudioSourceEditor : Editor {
 
     EditorGUILayout.Separator();
 
+    // Draw the listener directivity properties.
+    EditorGUILayout.BeginHorizontal();
+    EditorGUILayout.BeginVertical();
+    GUILayout.Label(listenerDirectivityLabel);
+    ++EditorGUI.indentLevel;
+    EditorGUILayout.Slider(listenerDirectivityAlpha, 0.0f, 1.0f, listenerDirectivityAlphaLabel);
+    EditorGUILayout.Slider(listenerDirectivitySharpness, 1.0f, 10.0f,
+                           listenerDirectivitySharpnessLabel);
+    --EditorGUI.indentLevel;
+    EditorGUILayout.EndVertical();
+    DrawDirectivityPattern(listenerDirectivityAlpha.floatValue,
+                           listenerDirectivitySharpness.floatValue,
+                           GvrAudio.listenerDirectivityColor,
+                           (int)(3.0f * EditorGUIUtility.singleLineHeight));
+    EditorGUILayout.EndHorizontal();
+
+    EditorGUILayout.Separator();
+
+    // Draw the source directivity properties.
     EditorGUILayout.BeginHorizontal();
     EditorGUILayout.BeginVertical();
     GUILayout.Label(directivityLabel);
@@ -164,43 +213,41 @@ public class GvrAudioSourceEditor : Editor {
     EditorGUILayout.Slider(directivitySharpness, 1.0f, 10.0f, directivitySharpnessLabel);
     --EditorGUI.indentLevel;
     EditorGUILayout.EndVertical();
-    DrawDirectivityPattern((int)(3.0f * EditorGUIUtility.singleLineHeight));
+    DrawDirectivityPattern(directivityAlpha.floatValue, directivitySharpness.floatValue,
+                           GvrAudio.sourceDirectivityColor,
+                           (int)(3.0f * EditorGUIUtility.singleLineHeight));
     EditorGUILayout.EndHorizontal();
     EditorGUILayout.PropertyField(occlusionEnabled, occlusionLabel);
 
     EditorGUILayout.Separator();
 
     // HRTF toggle can only be modified through the Inspector in Edit mode.
-    GUI.enabled = !EditorApplication.isPlaying;
+    EditorGUI.BeginDisabledGroup (EditorApplication.isPlaying);
     EditorGUILayout.PropertyField(hrtfEnabled, hrtfEnabledLabel);
-    GUI.enabled = true;
+    EditorGUI.EndDisabledGroup ();
 
     serializedObject.ApplyModifiedProperties();
   }
   /// @endcond
 
-  private void DrawDirectivityPattern (int size) {
+  private void DrawDirectivityPattern (float alpha, float sharpness, Color color, int size) {
     directivityTexture.Resize(size, size);
     // Draw the axes.
-    Color axisColor = 0.5f * Color.black;
+    Color axisColor = color.a * Color.black;
     for (int i = 0; i < size; ++i) {
       directivityTexture.SetPixel(i, size / 2, axisColor);
       directivityTexture.SetPixel(size / 2, i, axisColor);
     }
     // Draw the 2D polar directivity pattern.
-    Color cardioidColor = 0.75f * Color.blue;
     float offset = 0.5f * size;
     float cardioidSize = 0.45f * size;
-    Vector2[] vertices = GvrAudio.Generate2dPolarPattern(directivityAlpha.floatValue,
-                                                         directivitySharpness.floatValue, 180);
+    Vector2[] vertices = GvrAudio.Generate2dPolarPattern(alpha, sharpness, 180);
     for (int i = 0; i < vertices.Length; ++i) {
       directivityTexture.SetPixel((int)(offset + cardioidSize * vertices[i].x),
-                                  (int)(offset + cardioidSize * vertices[i].y),
-                                  cardioidColor);
+                                  (int)(offset + cardioidSize * vertices[i].y), color);
     }
     directivityTexture.Apply();
     // Show the texture.
     GUILayout.Box(directivityTexture);
   }
-
 }

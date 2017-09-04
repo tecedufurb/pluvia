@@ -5,12 +5,15 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject WaterObject;
     [SerializeField] private GameObject RainObject;
     [SerializeField] private GameObject SunObject;
+    [SerializeField] private GameObject RainButton;
+    [SerializeField] private GameObject DryButton;
     [SerializeField] private float GazeTime;
 
     private float mTimer;
     private bool mGazeAtRainButton;
     private bool mGazeAtDryButton;
     private bool mGazeAtDayNightButton;
+    private bool mDay = true;
 
     void Update() {
         if (mGazeAtRainButton)
@@ -50,15 +53,12 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
-
+    
     private void DayNight() {
-        mTimer += Time.deltaTime;
-        if (mTimer >= GazeTime) {
-            SunObject.transform.RotateAround(Vector3.zero, Vector3.right, 15f * Time.deltaTime);
-            SunObject.transform.LookAt(Vector3.zero);
-        }
+        SunObject.transform.RotateAround(Vector3.zero, Vector3.right, 15f * Time.deltaTime);
+        SunObject.transform.LookAt(Vector3.zero);
     }
-
+    
     public void PointerEnterRain() {
         mGazeAtRainButton = true;
         mGazeAtDryButton = false;
@@ -67,13 +67,15 @@ public class GameManager : MonoBehaviour {
     public void PointerEnterDry() {
         mGazeAtDryButton = true;
         mGazeAtRainButton = false;
-        RainObject.SetActive(false);
     }
-
+    
     public void PointerEnterDayNight() {
-        mGazeAtDayNightButton = true;
+        if (mGazeAtDayNightButton)
+            mGazeAtDayNightButton = false;
+        else
+            mGazeAtDayNightButton = true;
     }
-
+    
     public void PointerExit() {
 
     }
