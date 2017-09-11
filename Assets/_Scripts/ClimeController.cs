@@ -12,8 +12,11 @@ public class ClimeController : MonoBehaviour{
         StartCoroutine(MoveWater(target, limit, speed, direction));
     }
 
-    private IEnumerator MoveWater(Transform target, float limit, float speed, Direction direction) {
+    public void StartSunMovement(Transform target, float limit, float speed) {
+        StartCoroutine(SunMovement(target, limit, speed));
+    }
 
+    private IEnumerator MoveWater(Transform target, float limit, float speed, Direction direction) {
         if (direction == Direction.UP) {
             while (target.position.y < limit) {
                 target.position = new Vector3(target.position.x, target.position.y + Time.deltaTime * speed, target.position.z);
@@ -29,4 +32,12 @@ public class ClimeController : MonoBehaviour{
         }
     }
 
+    private IEnumerator SunMovement(Transform target, float limit, float speed/*15f*/) {
+        while (target.rotation.x < limit) {
+            target.RotateAround(Vector3.zero, Vector3.right, speed * Time.deltaTime);
+            target.LookAt(Vector3.zero);
+
+            yield return null;
+        }
+    }
 }
