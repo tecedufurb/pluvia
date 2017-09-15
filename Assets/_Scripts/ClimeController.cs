@@ -23,16 +23,17 @@ public class ClimeController : MonoBehaviour{
     }
 
     private IEnumerator MoveWater(Transform target, float limit, float speed, Direction direction) {
-        if (direction == Direction.UP && target.position.y < 310) {
+        if (direction == Direction.UP) {
             rain.SetActive(true);
-            while (target.position.y < limit) {
+            while (target.position.y < limit && target.position.y < 310) {
                 target.position = new Vector3(target.position.x, target.position.y + Time.deltaTime * speed, target.position.z);
 
                 yield return null;
             }
             rain.SetActive(false);
-        } else if(direction == Direction.DOWN && target.position.y > 210) {
-            while (target.position.y > limit) {
+        } else if(direction == Direction.DOWN) {
+            rain.SetActive(false);
+            while (target.position.y > limit && target.position.y > 210) {
                 target.position = new Vector3(target.position.x, target.position.y - Time.deltaTime * speed, target.position.z);
 
                 yield return null;
