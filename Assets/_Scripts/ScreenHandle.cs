@@ -6,18 +6,24 @@ public class ScreenHandle : MonoBehaviour {
     [SerializeField] private Transform sun;
     [SerializeField] private ClimeController climeController;
 
+    private bool mActive = true;
+
     public void StartRain() {
+        climeController.StopAllCoroutines();
         float limit = river.position.y + 20f;
         climeController.StartWaterMovement(river, limit, 3f, Direction.UP);
     }
 
     public void StartDry() {
+        climeController.StopAllCoroutines();
         float limit = river.position.y - 20f;
         climeController.StartWaterMovement(river, limit, 3f, Direction.DOWN);
     }
 
     public void StartDayNightCycle() {
+        mActive = !mActive;
+
         float limit = sun.rotation.x + 1;
-        climeController.StartSunMovement(sun, limit, 25f);
+        climeController.StartSunMovement(sun, limit, mActive, 25f);
     }
 }
