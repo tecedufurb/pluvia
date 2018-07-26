@@ -9,12 +9,14 @@ public class ScreenHandle : MonoBehaviour {
     private bool mActive = true;
 
     public void StartRain() {
+        print("Clicou na chuva");
         climeController.StopAllCoroutines();
         float limit = river.position.y + 20f;
         climeController.StartWaterMovement(river, limit, 3f, Direction.UP);
     }
 
     public void StartDry() {
+        print("Clicou no sol");
         climeController.StopAllCoroutines();
         float limit = river.position.y - 20f;
         climeController.StartWaterMovement(river, limit, 3f, Direction.DOWN);

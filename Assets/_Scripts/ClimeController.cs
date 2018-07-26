@@ -1,12 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public enum Direction {
-    UP, DOWN
-}
-
 public class ClimeController : MonoBehaviour{
-
+    
     [SerializeField] private GameObject rain;
 
     public void StartWaterMovement(Transform target, float limit, float speed, Direction direction) {
@@ -18,26 +14,26 @@ public class ClimeController : MonoBehaviour{
         StartCoroutine(SunMovement(target, limit, active, speed));
     }
 
-    public void StopCoroutines() {
-        StopAllCoroutines();
-    }
-
     private IEnumerator MoveWater(Transform target, float limit, float speed, Direction direction) {
-        if (direction == Direction.UP) {
-            rain.SetActive(true);
-            while (target.position.y < limit && target.position.y < 310) {
-                target.position = new Vector3(target.position.x, target.position.y + Time.deltaTime * speed, target.position.z);
+        switch (direction) {
+            case Direction.UP:
+                rain.SetActive(true);
+                while (target.position.y < limit && target.position.y < 310) {
+                    target.position = new Vector3(target.position.x, target.position.y + Time.deltaTime * speed, target.position.z);
 
-                yield return null;
-            }
-            rain.SetActive(false);
-        } else if(direction == Direction.DOWN) {
-            rain.SetActive(false);
-            while (target.position.y > limit && target.position.y > 210) {
-                target.position = new Vector3(target.position.x, target.position.y - Time.deltaTime * speed, target.position.z);
+                    yield return null;
+                }
+                rain.SetActive(false);
+                break;
+            case Direction.DOWN:
+                rain.SetActive(false);
+                while (target.position.y > limit && target.position.y > 210) {
+                    target.position = new Vector3(target.position.x, target.position.y - Time.deltaTime * speed, target.position.z);
 
-                yield return null;
-            }
+                    yield return null;
+                }
+
+                break;
         }
     }
 
