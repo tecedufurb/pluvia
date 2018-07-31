@@ -20,7 +20,11 @@ public class ClimeController : MonoBehaviour{
         waterFallInitialPosition = waterFall.position;
         waterFallFinalPosition = new Vector3(waterFall.position.x, -20f, waterFall.position.z);
     }
-
+    
+    /// <summary>
+    /// Called in the EventTrigger of the RainButton button.
+    /// Starts the Coroutine MoveWater
+    /// </summary>
     public void StartRain() {
         StartCoroutine(MoveWater(Direction.UP));
     }
@@ -29,14 +33,18 @@ public class ClimeController : MonoBehaviour{
         StartCoroutine(MoveWater(Direction.DOWN));
     }
 
+    public void StopRain() {
+        StopAllCoroutines();
+        rain.SetActive(false);
+    }
+
     private IEnumerator MoveWater(Direction direction) {
         switch (direction) {
             case Direction.UP:
                 rain.SetActive(true);
-                if (!waterFall.position.Equals(waterFallInitialPosition)) {
-//                    print("ativou waterfall");
+                if (!waterFall.position.Equals(waterFallInitialPosition))
                     waterFall.position = waterFallInitialPosition;   
-                }
+                
                 yield return new WaitForSeconds(2f);
                 while (river.position.y < maxPosition) {
                     river.position = new Vector3(river.position.x, 
@@ -57,17 +65,4 @@ public class ClimeController : MonoBehaviour{
                 break;
         }
     }
-    
-//    public void StartSunMovement(Transform target, float limit, bool active, float speed) {
-//        StartCoroutine(SunMovement(target, limit, active, speed));
-//    }
-    
-//    private IEnumerator SunMovement(Transform target, float limit, bool active, float speed) {
-//        while (active) {
-//            target.RotateAround(Vector3.zero, Vector3.right, speed * Time.deltaTime);
-//            target.LookAt(Vector3.zero);
-//
-//            yield return null;
-//        }
-//    }
 }
