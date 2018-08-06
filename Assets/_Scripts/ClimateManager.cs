@@ -5,7 +5,7 @@ public enum Direction {
     UP, DOWN
 }
 
-public class ClimeController : MonoBehaviour{
+public class ClimateManager : MonoBehaviour{
     
     [SerializeField] private GameObject rain;
     [SerializeField] private Transform river;
@@ -55,7 +55,7 @@ public class ClimeController : MonoBehaviour{
                 break;
             case Direction.DOWN:
                 rain.SetActive(false);
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(.5f);
                 while (river.position.y > minPosition) {
                     river.position = new Vector3(river.position.x, 
                         river.position.y - Time.deltaTime * speed, river.position.z);
