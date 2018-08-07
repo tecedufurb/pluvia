@@ -18,7 +18,7 @@ public class ClimateManager : MonoBehaviour{
     }
     
     /// <summary>
-    /// Starts the Coroutine MoveRiverUp witch will activate the rain and the waterfall (if they were disable)
+    /// Starts the coroutine MoveRiverUp witch will activate the rain and the waterfall (if they were disable)
     /// and move the river up while the player keeps pressing the button. 
     /// Called in the EventTrigger of the RainButton button.
     /// </summary>
@@ -27,8 +27,8 @@ public class ClimateManager : MonoBehaviour{
     }
     
     /// <summary>
-    /// Starts the Coroutine MoveRiverDown witch will disable the rain and move the river down
-    /// while the player keeps pressing the button. If the river reachs it limits the waterfall
+    /// Starts the coroutine MoveRiverDown witch will disable the rain and move the river down
+    /// while the player keeps pressing the button. If the river reaches its limit the waterfall
     /// will be disable too.
     /// Called in the EventTrigger of the DryButton button.
     /// </summary>
@@ -36,6 +36,9 @@ public class ClimateManager : MonoBehaviour{
         StartCoroutine(MoveRiverDown());
     }
 
+    /// <summary>
+    /// Stops the coroutine MoveRiverUp and disables the rain.
+    /// </summary>
     public void StopRain() {
         StopAllCoroutines();
         rain.SetActive(false);
