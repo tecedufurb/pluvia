@@ -16,5 +16,4 @@ A jogabilidade consiste em controlar o nível do rio, fazendo com que ele aument
   <img width="420" src="https://github.com/tecedufurb/pluvia/blob/master/screenshots/03.png">
 </p>
 
-<hr>
-[Baixe pela GooglePlay](https://play.google.com/store/apps/details?id=com.furb.pluvia&hl=pt_BR).
+[Veja na GooglePlay](https://play.google.com/store/apps/details?id=com.furb.pluvia&hl=pt_BR)
