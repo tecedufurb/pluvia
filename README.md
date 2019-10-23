@@ -5,6 +5,10 @@
   <img width="420" src="https://github.com/tecedufurb/pluvia/blob/master/screenshots/01.png">
 </p>
 
+## Como baixar
+ * [GooglePlay](https://play.google.com/store/apps/details?id=com.furb.pluvia&hl=pt_BR)
+ * [APK para Android](https://github.com/tecedufurb/pluvia/raw/master/pluvia.apk)
+
 ## Jogabilidade
 A jogabilidade consiste em controlar o nível do rio, fazendo com que ele aumente ou diminua. Para isso existem dois botões flutuantes acima da tela. Para selecionar um dos botões basta movimentar a cabeça de forma a posicionar o ponto branco no centro da tela acima do botão que deseja selecionar.
  
@@ -15,7 +19,3 @@ A jogabilidade consiste em controlar o nível do rio, fazendo com que ele aument
   <img width="420" src="https://github.com/tecedufurb/pluvia/blob/master/screenshots/02.png">
   <img width="420" src="https://github.com/tecedufurb/pluvia/blob/master/screenshots/03.png">
 </p>
-
-## Como baixar
- * [GooglePlay](https://play.google.com/store/apps/details?id=com.furb.pluvia&hl=pt_BR)
- * [APK para Android](https://github.com/tecedufurb/pluvia/raw/master/pluvia.apk)
